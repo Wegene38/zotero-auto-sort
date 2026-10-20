@@ -106,3 +106,7 @@ button.link { border: none; background: none; color: var(--accent); padding: 0; 
 
 footer { border-top: 1px solid var(--border); padding-top: 10px; flex-wrap: nowrap; }
 #summary { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+.title-row { display: flex; align-items: center; gap: 12px; }
+.title-row h1 { flex: 1; }
+.lang { display: inline-flex; align-items: center; gap: 6px; color: var(--muted); }

@@ -1,45 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
 <?xml-stylesheet href="chrome://autosort/content/dialog.css" type="text/css"?>
+<!-- Text is filled in by dialog.js from i18n.js: data-i18n sets textContent, data-i18n-placeholder sets placeholder. -->
 <window xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
         xmlns:html="http://www.w3.org/1999/xhtml"
         id="autosort-window"
-        title="自动分类文献"
+        title="Auto Sort"
         windowtype="autosort:dialog"
         width="760" height="680">
   <html:div id="root">
     <html:header>
-      <html:h1>自动分类文献</html:h1>
+      <html:div class="title-row">
+        <html:h1 data-i18n="title"></html:h1>
+        <html:label class="lang">
+          <html:span data-i18n="language"></html:span>
+          <html:select id="language">
+            <html:option value="auto" data-i18n="lang.auto"></html:option>
+            <html:option value="en">English</html:option>
+            <html:option value="zh">中文</html:option>
+          </html:select>
+        </html:label>
+      </html:div>
       <html:p id="scope" class="muted"></html:p>
     </html:header>
 
     <html:div class="controls">
-      <html:label>分类数量
-        <html:input id="k" type="number" min="2" max="30" placeholder="自动"/>
+      <html:label><html:span data-i18n="k.label"></html:span>
+        <html:input id="k" type="number" min="2" max="30"/>
       </html:label>
-      <html:label><html:input id="multi" type="checkbox" checked="checked"/>允许一篇文献属于多个分类</html:label>
-      <html:label id="subs-label" hidden="hidden"><html:input id="subs" type="checkbox" checked="checked"/>包含子分类中的文献</html:label>
-      <html:button id="rescan">重新生成</html:button>
+      <html:label><html:input id="multi" type="checkbox" checked="checked"/><html:span data-i18n="multi"></html:span></html:label>
+      <html:label id="subs-label" hidden="hidden"><html:input id="subs" type="checkbox" checked="checked"/><html:span data-i18n="subs"></html:span></html:label>
+      <html:button id="rescan" data-i18n="rescan"></html:button>
     </html:div>
 
-    <html:div id="status" class="status">正在扫描…</html:div>
+    <html:div id="status" class="status"></html:div>
 
     <html:div class="list-tools">
-      <html:button id="select-all" class="link">全选</html:button>
-      <html:button id="select-none" class="link">全不选</html:button>
-      <html:span class="muted">勾选要创建的分类，名称可以直接修改；点“预览”查看包含的文献。</html:span>
+      <html:button id="select-all" class="link" data-i18n="selectAll"></html:button>
+      <html:button id="select-none" class="link" data-i18n="selectNone"></html:button>
+      <html:span class="muted" data-i18n="hint"></html:span>
     </html:div>
 
     <html:ul id="list"></html:ul>
 
     <html:footer>
-      <html:label>放入父分类
+      <html:label><html:span data-i18n="parent"></html:span>
         <html:input id="parent-name" type="text"/>
       </html:label>
       <html:span id="summary" class="muted"></html:span>
-      <html:button id="cancel">取消</html:button>
-      <html:button id="apply" class="primary" disabled="disabled">创建分类</html:button>
+      <html:button id="cancel"></html:button>
+      <html:button id="apply" class="primary" disabled="disabled" data-i18n="apply"></html:button>
     </html:footer>
   </html:div>
+  <script src="chrome://autosort/content/i18n.js"/>
   <script src="chrome://autosort/content/dialog.js"/>
 </window>

@@ -1,62 +1,68 @@
-# Auto Sort — Zotero 自动分类插件
+**English** | [简体中文](README.zh-CN.md)
 
-扫描文库（或某个分类）里的文献，在本地推荐主题分类。你勾选想要的分类后，插件会在 `Auto-Sorted` 父分类下创建子分类，并把文献加进去。原有分类不动；Zotero 的分类只是引用，不会复制附件。
+# Auto Sort — automatic categorization for Zotero
 
-支持 Zotero 7 – 10（在 Zotero 10.0.6 上测试过）。
+Auto Sort scans your library (or one collection) and suggests topic categories, computed entirely on your machine. Check the ones you want, and it creates subcollections under an `Auto-Sorted` parent collection and files the items into them. Your existing collections are never changed. Zotero collections only hold references, so attachments are not duplicated.
 
-## 使用
+Works with Zotero 7–10 (tested on Zotero 10.0.6). The interface is available in English and Chinese.
 
-- **工具 → 自动分类文献…**：扫描当前选中的整个文库
-- **右键分类 → 自动分类此处文献…**：只扫描这个分类（可选是否包含子分类）
+## Usage
 
-在对话框中可以：
+- **Tools → Auto Sort Library…** scans the whole library that is currently selected.
+- **Right-click a collection → Auto Sort Items Here…** scans only that collection, optionally including its subcollections.
 
-- 调整分类数量，或者勾选/取消“允许一篇文献属于多个分类”，然后点“重新生成”
-- 勾选要创建的分类、直接修改分类名称、点“预览”查看文献（点击标题会在 Zotero 中定位到该文献）
-- 修改父分类名称（默认 `Auto-Sorted`）
+In the dialog you can:
 
-重复运行是安全的：同名的父分类和子分类会复用，已经在里面的文献不会重复添加。
+- Change the number of categories or toggle "Allow an item in multiple categories", then click **Regenerate**
+- Check the categories to create, rename them in place, and click **Preview** to see their items (clicking a title shows it in Zotero)
+- Change the parent collection name (default `Auto-Sorted`)
+- Switch the interface language from the menu in the top-right corner (Follow Zotero / English / 中文). Your choice is remembered.
 
-## 算法（纯本地，不联网）
+Running it again is safe: parent and subcollections with the same name are reused, and items already in them are not added twice.
 
-`addon/content/classifier.js`：
+## How it works (local only, no network)
 
-1. 从标题（权重 ×3）、摘要（×1）、标签（×3）中提取词和相邻二元词组。英文做停用词过滤和简单词干化，中文按字的二元组切分；会清理标题中的 HTML 标签、PDF 文件名格式、网页标题后缀。
-2. 计算 TF-IDF 向量，用球面 k-means 聚类（k-means++ 初始化，固定随机种子，重启 3 次取最优）。默认 k ≈ √(n/5)，范围 2–30。
-3. 用“在本类中常见、在全库中少见”的词给每个类命名，优先选词组和标签。
-4. 多归属：如果一篇文献和另一个类中心的相似度 ≥ 最佳相似度的 85%，也会加入那个类。
+`addon/content/classifier.js`:
 
-在 2231 篇文献上，聚类用时不到 1 秒。
+1. Extracts words and adjacent word pairs from titles (weight ×3), abstracts (×1) and tags (×3). English text gets stopword filtering and light stemming; Chinese text is split into character bigrams. HTML tags, PDF-filename-style titles and web page title suffixes are cleaned up.
+2. Builds TF-IDF vectors and clusters them with spherical k-means (k-means++ seeding, fixed random seed, best of 3 restarts). The default k is ≈ √(n/5), clamped to 2–30.
+3. Names each cluster after terms that are common inside it but rare in the rest of the library, preferring phrases and tags.
+4. Multi-membership: an item also joins another cluster if its similarity to that cluster's center is at least 85% of its best similarity.
 
-## 开发
+Clustering 2231 items takes under a second.
+
+## Development
 
 ```
 addon/
-  manifest.json      插件元数据
-  bootstrap.js       生命周期：注册 chrome、加载脚本
+  manifest.json        plugin metadata
+  bootstrap.js         lifecycle: registers chrome, loads scripts
   content/
-    autosort.js      菜单、读取条目、创建分类
-    classifier.js    分类算法（不依赖 Zotero，可在 Node 中运行）
-    dialog.xhtml/js/css  对话框界面
+    autosort.js        menus, reading items, creating collections, language preference
+    classifier.js      categorization algorithm (no Zotero dependency, runs in Node)
+    i18n.js            English and Chinese UI strings
+    dialog.xhtml/js/css  dialog UI
 scripts/
-  build.sh           打包成 build/auto-sort-<version>.xpi
-  try-classifier.js  在 Node 中用导出的数据测试算法
+  build.sh             packages build/auto-sort-<version>.xpi
+  try-classifier.js    tests the algorithm in Node on exported data
 ```
 
-打包：
+Build:
 
 ```bash
 ./scripts/build.sh
 ```
 
-安装：Zotero → 工具 → 插件 → 齿轮图标 → Install Add-on From File… → 选择 `build/auto-sort-*.xpi`。
+Install: Zotero → Tools → Plugins → gear icon → Install Add-on From File… → choose `build/auto-sort-*.xpi`.
 
-调试算法（不需要启动 Zotero）：先从 `zotero.sqlite` 的副本导出 `[{id, lib, title, abstract, tags: "a|b"}]` 格式的 JSON，然后运行：
+**Adding a language:** add a block with the same keys to `STRINGS` in `addon/content/i18n.js`, add its name to `LANGUAGE_NAMES`, add an `<option>` to the language menu in `dialog.xhtml`, and extend `resolve()` so "Follow Zotero" can pick it.
+
+**Testing the algorithm without Zotero:** export `[{id, lib, title, abstract, tags: "a|b"}]` JSON from a copy of `zotero.sqlite`, then run:
 
 ```bash
 node scripts/try-classifier.js items.json 1
 ```
 
-自检：设置环境变量 `AUTOSORT_SELFTEST=1` 启动 Zotero 时，插件会自动扫描、创建测试分类、驱动一遍对话框，然后退出（可选 `AUTOSORT_SNAPSHOT=/path.png` 保存对话框截图）。**请只在使用测试 profile 和数据副本时这样做。**
+**Self-test:** if Zotero is started with the environment variable `AUTOSORT_SELFTEST=1`, the plugin scans the library, creates test collections, drives the dialog in both languages, and quits. Set `AUTOSORT_SNAPSHOT=/path.png` to also save screenshots of the dialog. **Only do this with a test profile and a copy of your data.**
 
-`manifest.json` 中的 `update_url` 是占位地址，正式发布前请换成你自己的。
+The `update_url` in `manifest.json` is a placeholder; replace it with your own before publishing.

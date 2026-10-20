@@ -1,4 +1,4 @@
-/* global Zotero, Services, AutoSortClassifier */
+/* global Zotero, Services, Ci, AutoSortClassifier, AutoSortI18n */
 /* Plugin controller: menus, reading items from Zotero, creating collections. */
 
 var AutoSort = {
@@ -7,6 +7,7 @@ var AutoSort = {
   rootURI: null,
   dialog: null,
   ELEMENT_IDS: ["autosort-tools-menuitem", "autosort-collection-sep", "autosort-collection-menuitem"],
+  LANGUAGE_PREF: "extensions.autosort.language",
 
   init({ id, version, rootURI }) {
     this.id = id;
@@ -18,6 +19,31 @@ var AutoSort = {
 
   log(msg) {
     Zotero.debug("AutoSort: " + msg);
+  },
+
+  /** Language preference as stored: "auto" | "en" | "zh". */
+  getLanguagePref() {
+    return Zotero.Prefs.get(this.LANGUAGE_PREF, true) || "auto";
+  },
+
+  setLanguagePref(pref) {
+    Zotero.Prefs.set(this.LANGUAGE_PREF, pref, true);
+    for (const win of Zotero.getMainWindows()) this.updateMenuLabels(win);
+  },
+
+  /** Effective UI language: "en" | "zh". */
+  get lang() {
+    return AutoSortI18n.resolve(this.getLanguagePref(), Zotero.locale);
+  },
+
+  t(key, args) {
+    return AutoSortI18n.t(this.lang, key, args);
+  },
+
+  updateMenuLabels(win) {
+    const doc = win.document;
+    doc.getElementById("autosort-tools-menuitem")?.setAttribute("label", this.t("menu.tools"));
+    doc.getElementById("autosort-collection-menuitem")?.setAttribute("label", this.t("menu.collection"));
   },
 
   addToAllWindows() {
@@ -34,7 +60,6 @@ var AutoSort = {
     if (tools) {
       const item = doc.createXULElement("menuitem");
       item.id = "autosort-tools-menuitem";
-      item.setAttribute("label", "自动分类文献…");
       item.addEventListener("command", () => this.openFromWindow(win));
       tools.appendChild(item);
     }
@@ -45,7 +70,6 @@ var AutoSort = {
       sep.id = "autosort-collection-sep";
       const item = doc.createXULElement("menuitem");
       item.id = "autosort-collection-menuitem";
-      item.setAttribute("label", "自动分类此处文献…");
       item.addEventListener("command", () => this.openFromWindow(win));
       collMenu.append(sep, item);
       // Only offer it on libraries and collections the user can edit (not trash, feeds, searches…).
@@ -56,6 +80,7 @@ var AutoSort = {
         item.hidden = !ok;
       });
     }
+    this.updateMenuLabels(win);
   },
 
   removeFromWindow(win) {
@@ -82,7 +107,7 @@ var AutoSort = {
       // e.g. Tools menu while a saved search or the trash is selected: fall back to the whole library.
       const libraryID = win.ZoteroPane.getSelectedLibraryID();
       if (!Zotero.Libraries.get(libraryID)?.editable) {
-        Services.prompt.alert(win, "自动分类", "当前文库是只读的，无法创建分类。");
+        Services.prompt.alert(win, this.t("title"), this.t("readonly"));
         return;
       }
       target = { libraryID, collection: null };
@@ -93,8 +118,11 @@ var AutoSort = {
   open(win, { libraryID, collection }) {
     if (this.dialog && !this.dialog.closed) this.dialog.close();
     const io = {
-      scopeLabel: collection ? `分类「${collection.name}」` : `文库「${Zotero.Libraries.getName(libraryID)}」`,
+      scopeName: collection ? collection.name : Zotero.Libraries.getName(libraryID),
       isCollection: !!collection,
+      zoteroLocale: Zotero.locale,
+      getLanguagePref: () => this.getLanguagePref(),
+      setLanguagePref: (pref) => this.setLanguagePref(pref),
       defaultParentName: "Auto-Sorted",
       scan: (opts) => this.scan(libraryID, collection ? collection.id : null, opts),
       apply: (parentName, groups, onProgress) => this.apply(win, libraryID, parentName, groups, onProgress),
@@ -146,7 +174,7 @@ var AutoSort = {
     const info = {};
     for (const item of items) {
       info[item.id] = {
-        title: AutoSortClassifier.cleanTitle(item.getField("title")) || "(无标题)",
+        title: AutoSortClassifier.cleanTitle(item.getField("title")),
         creator: item.getField("firstCreator"),
         year: item.getField("date", true, true).slice(0, 4).replace(/^0000$/, ""),
       };
@@ -205,6 +233,8 @@ var AutoSort = {
       const out = await this.apply(win, libraryID, "Auto-Sorted SelfTest", res.clusters.slice(0, 3), null);
       const again = await this.apply(win, libraryID, "Auto-Sorted SelfTest", res.clusters.slice(0, 3), null);
       this.log(`SELFTEST apply: ${JSON.stringify(out)}; rerun: ${JSON.stringify(again)}`);
+      this.log(`SELFTEST Zotero.locale=${Zotero.locale}, menu="${win.document.getElementById("autosort-tools-menuitem").getAttribute("label")}"`);
+      this.setLanguagePref("zh");
       const dlg = this.open(win, { libraryID, collection: null });
       dlg.addEventListener("load", async () => {
         this.log("SELFTEST dialog loaded");
@@ -215,22 +245,30 @@ var AutoSort = {
         for (const cb of [...doc.querySelectorAll("#list input[type=checkbox]")].slice(0, 2)) cb.click();
         this.log("SELFTEST summary: " + doc.getElementById("summary").textContent);
         const shotPath = Services.env.get("AUTOSORT_SNAPSHOT");
-        if (shotPath) {
-          // Expand the first cluster's preview so the screenshot shows it.
-          doc.querySelector("#list .row-main button.link")?.click();
-          await Zotero.Promise.delay(500);
+        const snapshot = async (path) => {
           const bitmap = await dlg.browsingContext.currentWindowGlobal.drawSnapshot(null, 1, "white");
           const canvas = doc.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
           canvas.width = bitmap.width;
           canvas.height = bitmap.height;
           canvas.getContext("2d").drawImage(bitmap, 0, 0);
           const blob = await new Promise((r) => canvas.toBlob(r, "image/png"));
-          await IOUtils.write(shotPath, new Uint8Array(await blob.arrayBuffer()));
-          this.log("SELFTEST snapshot written");
-        }
+          await IOUtils.write(path, new Uint8Array(await blob.arrayBuffer()));
+          this.log("SELFTEST snapshot written: " + path);
+        };
+        // Expand the first cluster's preview so the screenshot shows it.
+        doc.querySelector("#list .row-main button.link")?.click();
+        await Zotero.Promise.delay(500);
+        if (shotPath) await snapshot(shotPath.replace(/\.png$/, "-zh.png"));
+        const select = doc.getElementById("language");
+        select.value = "en";
+        select.dispatchEvent(new dlg.Event("change"));
+        await Zotero.Promise.delay(500);
+        this.log(`SELFTEST language pref=${this.getLanguagePref()} status="${doc.getElementById("status").textContent}" ` +
+          `summary="${doc.getElementById("summary").textContent}" menu="${win.document.getElementById("autosort-tools-menuitem").getAttribute("label")}"`);
+        if (shotPath) await snapshot(shotPath.replace(/\.png$/, "-en.png"));
         await Zotero.Promise.delay(1500);
         doc.getElementById("apply").click();
-        while (!/完成|失败/.test(doc.getElementById("status").textContent)) await Zotero.Promise.delay(200);
+        while (!/done|error/.test(doc.getElementById("status").className)) await Zotero.Promise.delay(200);
         this.log("SELFTEST dialog status: " + doc.getElementById("status").textContent);
         Services.startup.quit(Ci.nsIAppStartup.eAttemptQuit);
       });

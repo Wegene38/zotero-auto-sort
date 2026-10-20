@@ -10,6 +10,7 @@ async function startup({ id, version, rootURI }) {
   const manifestURI = Services.io.newURI(rootURI + "manifest.json");
   chromeHandle = aomStartup.registerChrome(manifestURI, [["content", "autosort", rootURI + "content/"]]);
 
+  Services.scriptloader.loadSubScript(rootURI + "content/i18n.js");
   Services.scriptloader.loadSubScript(rootURI + "content/classifier.js");
   Services.scriptloader.loadSubScript(rootURI + "content/autosort.js");
   AutoSort.init({ id, version, rootURI });

@@ -289,9 +289,10 @@ var AutoSortClassifier = (function () {
       yieldFn: null,
       onProgress: null,
     }, options || {});
-    const progress = (msg) => opts.onProgress && opts.onProgress(msg);
+    // onProgress(key, args): key is an i18n string id, see i18n.js
+    const progress = (key, args) => opts.onProgress && opts.onProgress(key, args);
 
-    progress("提取关键词…");
+    progress("progress.terms");
     const vz = vectorize(docs, opts);
     const dim = vz.vocabList.length;
     const usable = [], unclassified = [];
@@ -308,7 +309,7 @@ var AutoSortClassifier = (function () {
     const rand = mulberry32(opts.seed);
     let best = null;
     for (let r = 0; r < opts.restarts; r++) {
-      progress(`聚类中（${r + 1}/${opts.restarts}）…`);
+      progress("progress.cluster", { i: r + 1, n: opts.restarts });
       const res = await sphericalKMeans(vectors, k, dim, rand, opts.yieldFn);
       if (!best || res.objective > best.objective) best = res;
     }
