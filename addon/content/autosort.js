@@ -6,7 +6,7 @@ var AutoSort = {
   version: null,
   rootURI: null,
   dialog: null,
-  ELEMENT_IDS: ["autosort-tools-menuitem", "autosort-collection-sep", "autosort-collection-menuitem"],
+  ELEMENT_IDS: ["autosort-tools-menuitem", "autosort-collection-sep", "autosort-collection-menuitem", "autosort-tb-button"],
   LANGUAGE_PREF: "extensions.autosort.language",
 
   init({ id, version, rootURI }) {
@@ -44,6 +44,7 @@ var AutoSort = {
     const doc = win.document;
     doc.getElementById("autosort-tools-menuitem")?.setAttribute("label", this.t("menu.tools"));
     doc.getElementById("autosort-collection-menuitem")?.setAttribute("label", this.t("menu.collection"));
+    doc.getElementById("autosort-tb-button")?.setAttribute("tooltiptext", this.t("toolbar.tooltip"));
   },
 
   addToAllWindows() {
@@ -62,6 +63,22 @@ var AutoSort = {
       item.id = "autosort-tools-menuitem";
       item.addEventListener("command", () => this.openFromWindow(win));
       tools.appendChild(item);
+    }
+
+    // Button in the items toolbar, right after "New Note", styled like Zotero's own buttons.
+    const toolbar = doc.getElementById("zotero-items-toolbar");
+    if (toolbar) {
+      const button = doc.createXULElement("toolbarbutton");
+      button.id = "autosort-tb-button";
+      button.className = "zotero-tb-button";
+      button.setAttribute("tabindex", "-1");
+      button.style.listStyleImage = 'url("chrome://autosort/content/toolbar-icon.svg")';
+      button.style.fill = "currentColor";
+      button.style.setProperty("-moz-context-properties", "fill, fill-opacity");
+      button.addEventListener("command", () => this.openFromWindow(win));
+      const noteButton = doc.getElementById("zotero-tb-note-add");
+      if (noteButton) noteButton.after(button);
+      else toolbar.prepend(button);
     }
 
     const collMenu = doc.getElementById("zotero-collectionmenu");
@@ -235,6 +252,20 @@ var AutoSort = {
       this.log(`SELFTEST apply: ${JSON.stringify(out)}; rerun: ${JSON.stringify(again)}`);
       this.log(`SELFTEST Zotero.locale=${Zotero.locale}, menu="${win.document.getElementById("autosort-tools-menuitem").getAttribute("label")}"`);
       this.setLanguagePref("zh");
+      const button = win.document.getElementById("autosort-tb-button");
+      this.log(`SELFTEST toolbar button: present=${!!button} after=${button?.previousElementSibling?.id} tooltip="${button?.getAttribute("tooltiptext")}"`);
+      const shot = Services.env.get("AUTOSORT_SNAPSHOT");
+      if (shot && button) {
+        const r = win.document.getElementById("zotero-items-toolbar").getBoundingClientRect();
+        const bitmap = await win.browsingContext.currentWindowGlobal.drawSnapshot(
+          new win.DOMRect(r.x, r.y, Math.min(r.width, 420), r.height), 2, "white");
+        const canvas = win.document.createElementNS("http://www.w3.org/1999/xhtml", "canvas");
+        canvas.width = bitmap.width;
+        canvas.height = bitmap.height;
+        canvas.getContext("2d").drawImage(bitmap, 0, 0);
+        const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
+        await IOUtils.write(shot.replace(/\.png$/, "-toolbar.png"), new Uint8Array(await blob.arrayBuffer()));
+      }
       const dlg = this.open(win, { libraryID, collection: null });
       dlg.addEventListener("load", async () => {
         this.log("SELFTEST dialog loaded");

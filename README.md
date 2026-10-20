@@ -8,6 +8,7 @@ Works with Zotero 7–10 (tested on Zotero 10.0.6). The interface is available i
 
 ## Usage
 
+- **Toolbar button** (folder with a sparkle, right after "New Note" above the item list) scans the selected collection, or the whole library if a library is selected.
 - **Tools → Auto Sort Library…** scans the whole library that is currently selected.
 - **Right-click a collection → Auto Sort Items Here…** scans only that collection, optionally including its subcollections.
 
@@ -41,6 +42,7 @@ addon/
     autosort.js        menus, reading items, creating collections, language preference
     classifier.js      categorization algorithm (no Zotero dependency, runs in Node)
     i18n.js            English and Chinese UI strings
+    toolbar-icon.svg   toolbar button icon (follows the light/dark theme)
     dialog.xhtml/js/css  dialog UI
 scripts/
   build.sh             packages build/auto-sort-<version>.xpi

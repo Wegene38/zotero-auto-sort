@@ -8,6 +8,7 @@
 
 ## 使用
 
+- **工具栏按钮**（文献列表上方、“新建笔记”右边带闪光的文件夹图标）：选中分类时扫描该分类，选中文库时扫描整个文库
 - **工具 → 自动分类文献…**：扫描当前选中的整个文库
 - **右键分类 → 自动分类此处文献…**：只扫描这个分类（可选是否包含子分类）
 
@@ -41,6 +42,7 @@ addon/
     autosort.js        菜单、读取条目、创建分类、语言设置
     classifier.js      分类算法（不依赖 Zotero，可在 Node 中运行）
     i18n.js            中英文界面文字
+    toolbar-icon.svg   工具栏按钮图标（随浅色/深色主题变色）
     dialog.xhtml/js/css  对话框界面
 scripts/
   build.sh             打包成 build/auto-sort-<version>.xpi
