@@ -7,4 +7,5 @@ mkdir -p build
 OUT="build/auto-sort-$VERSION.xpi"
 rm -f "$OUT"
 (cd addon && zip -qr "../$OUT" . -x '.*')
+zip -qj "$OUT" LICENSE.md   # the license must travel with every copy
 echo "$OUT"

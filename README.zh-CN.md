@@ -67,4 +67,10 @@ node scripts/try-classifier.js items.json 1
 
 **自检：** 设置环境变量 `AUTOSORT_SELFTEST=1` 启动 Zotero 时，插件会自动扫描、创建测试分类、用中英两种语言各驱动一遍对话框，然后退出（可选 `AUTOSORT_SNAPSHOT=/path.png` 保存对话框截图）。**请只在使用测试 profile 和数据副本时这样做。**
 
-`manifest.json` 中的 `update_url` 是占位地址，正式发布前请换成你自己的。
+## 许可证
+
+版权所有 (c) 2026 Wegene38。除许可证明确授予的权利外，保留所有权利。
+
+本项目采用 [PolyForm Noncommercial License 1.0.0](LICENSE.md) 许可。你可以**仅出于非商业目的**使用、修改和分享本插件，例如个人学习、学术研究，以及慈善机构、教育机构和政府部门的使用。未经作者书面许可，**禁止任何商业用途**。再分发时必须附带许可证全文和 `Required Notice` 那一行。
+
+许可证的法律效力以英文原文为准。

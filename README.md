@@ -67,4 +67,8 @@ node scripts/try-classifier.js items.json 1
 
 **Self-test:** if Zotero is started with the environment variable `AUTOSORT_SELFTEST=1`, the plugin scans the library, creates test collections, drives the dialog in both languages, and quits. Set `AUTOSORT_SNAPSHOT=/path.png` to also save screenshots of the dialog. **Only do this with a test profile and a copy of your data.**
 
-The `update_url` in `manifest.json` is a placeholder; replace it with your own before publishing.
+## License
+
+Copyright (c) 2026 Wegene38. All rights reserved except as granted by the license.
+
+Licensed under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). You may use, modify and share this plugin for **noncommercial purposes only**, such as personal study, academic research, and use by charities, educational institutions and government bodies. **Any commercial use is prohibited** without written permission from the author. Redistributions must include the license and the `Required Notice` line.

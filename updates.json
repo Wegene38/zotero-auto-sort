@@ -1,0 +1,17 @@
+{
+  "addons": {
+    "autosort@wegene38": {
+      "updates": [
+        {
+          "version": "0.1.0",
+          "update_link": "https://github.com/Wegene38/zotero-auto-sort/releases/download/v0.1.0/auto-sort-0.1.0.xpi",
+          "applications": {
+            "zotero": {
+              "strict_min_version": "7.0"
+            }
+          }
+        }
+      ]
+    }
+  }
+}
