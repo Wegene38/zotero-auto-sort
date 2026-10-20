@@ -20,7 +20,7 @@ The interface is also available in Chinese ([see the Chinese README](README.zh-C
 
 ## Download and install
 
-**[⬇ Download the latest release](https://github.com/Wegene38/zotero-auto-sort/releases/latest)** (current version: [v0.1.0](https://github.com/Wegene38/zotero-auto-sort/releases/tag/v0.1.0))
+**[⬇ Download the latest release](https://github.com/Wegene38/zotero-auto-sort/releases/latest)** (current version: [v0.1.1](https://github.com/Wegene38/zotero-auto-sort/releases/tag/v0.1.1))
 
 1. On the release page, download `auto-sort-<version>.xpi` from **Assets**. In Firefox, right-click the file and choose **Save Link As…**, because clicking it makes Firefox try to install it as a Firefox add-on.
 2. In Zotero, open **Tools → Plugins**.

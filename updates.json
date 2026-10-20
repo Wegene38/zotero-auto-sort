@@ -10,6 +10,15 @@
               "strict_min_version": "7.0"
             }
           }
+        },
+        {
+          "version": "0.1.1",
+          "update_link": "https://github.com/Wegene38/zotero-auto-sort/releases/download/v0.1.1/auto-sort-0.1.1.xpi",
+          "applications": {
+            "zotero": {
+              "strict_min_version": "7.0"
+            }
+          }
         }
       ]
     }

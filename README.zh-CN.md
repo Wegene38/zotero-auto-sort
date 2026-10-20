@@ -20,7 +20,7 @@
 
 ## 下载与安装
 
-**[⬇ 下载最新版本](https://github.com/Wegene38/zotero-auto-sort/releases/latest)**（当前版本：[v0.1.0](https://github.com/Wegene38/zotero-auto-sort/releases/tag/v0.1.0)）
+**[⬇ 下载最新版本](https://github.com/Wegene38/zotero-auto-sort/releases/latest)**（当前版本：[v0.1.1](https://github.com/Wegene38/zotero-auto-sort/releases/tag/v0.1.1)）
 
 1. 在 Release 页面的 **Assets** 中下载 `auto-sort-<版本号>.xpi`。如果用 Firefox，请右键选择 **链接另存为…**，因为直接点击会被 Firefox 当成它自己的扩展来安装。
 2. 在 Zotero 中打开 **工具 → 插件**。
