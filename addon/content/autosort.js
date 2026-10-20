@@ -268,7 +268,13 @@ var AutoSort = {
         const blob = await new Promise((res) => canvas.toBlob(res, "image/png"));
         await IOUtils.write(shot.replace(/\.png$/, "-toolbar.png"), new Uint8Array(await blob.arrayBuffer()));
       }
-      const dlg = this.open(win, { libraryID, collection: null });
+      // AUTOSORT_SELFTEST_COLLECTION=<name> points the dialog at one collection instead of the whole library.
+      const collName = Services.env.get("AUTOSORT_SELFTEST_COLLECTION");
+      const collection = collName
+        ? Zotero.Collections.getByLibrary(libraryID, true).find((c) => c.name === collName) || null
+        : null;
+      if (collName) this.log(`SELFTEST collection "${collName}": ${collection ? "found" : "NOT FOUND"}`);
+      const dlg = this.open(win, { libraryID, collection });
       dlg.addEventListener("load", async () => {
         this.log("SELFTEST dialog loaded");
         const doc = dlg.document;

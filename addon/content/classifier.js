@@ -27,7 +27,7 @@ var AutoSortClassifier = (function () {
     "reveal revealed reveals role second showed shown shows significant significantly similar specific studied studies " +
     "study suggest suggested suggests type types understanding work year years total compared comparison approximately " +
     "among however important elsevier springer wiley copyright rights reserved author authors published journal pdf " +
-    "doi http https www com org vol issue pp sciencedirect pubmed online library researchgate properties challenges science web characterization functional integrate automated taxonomically"
+    "doi http https www com org vol issue pp sciencedirect pubmed online library researchgate properties challenges science web characterization functional integrate automated taxonomically underlying current knowledge give rise called discuss discussed encode encodes encoded mechanism mechanisms insight insights role roles across involved means"
   ).split(/\s+/));
 
   const CJK_STOP = new Set(("研究 分析 基于 方法 及其 进展 影响 应用 探讨 结果 表明 一种 我们 本文 通过 进行 利用 " +
@@ -167,7 +167,7 @@ var AutoSortClassifier = (function () {
       for (const [s, c] of m) if (c > n) { best = s; n = c; }
       return best;
     });
-    return { vectors, vocabList, surface, df: vocabList.map((t) => df.get(t)) };
+    return { vectors, vocabList, vocab, surface, df: vocabList.map((t) => df.get(t)) };
   }
 
   function dot(v, centroid) {
@@ -246,11 +246,22 @@ var AutoSortClassifier = (function () {
     const picked = [];
     for (const s of scored) {
       const term = vz.vocabList[s.t].replace(/^tag:/, "");
+      if (/^[a-z]{4,}ly$/.test(term)) continue;  // adverbs ("functionally") make poor labels
       const name = vz.surface[s.t];
       // Skip terms already covered by a picked label (e.g. "genome" after "genome assembly").
       if (picked.some((p) => overlaps(p.term, term))) continue;
       picked.push({ term, name, coverage: s.pIn });
       if (picked.length >= 6) break;
+    }
+    // Two single words that form a known phrase ("genome" + "assembly") become that phrase.
+    if (picked.length >= 2 && !/[ ]/.test(picked[0].term + picked[1].term)) {
+      for (const phrase of [picked[0].term + " " + picked[1].term, picked[1].term + " " + picked[0].term]) {
+        const idx = vz.vocab.get(phrase);
+        if (idx !== undefined) {
+          picked.splice(0, 2, { term: phrase, name: vz.surface[idx], coverage: picked[0].coverage });
+          break;
+        }
+      }
     }
     return picked;
   }
