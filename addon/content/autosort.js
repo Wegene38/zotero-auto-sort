@@ -61,7 +61,7 @@ var AutoSort = {
     if (tools) {
       const item = doc.createXULElement("menuitem");
       item.id = "autosort-tools-menuitem";
-      item.addEventListener("command", () => this.openFromWindow(win));
+      item.addEventListener("command", () => this.openFromWindow(win, { wholeLibrary: true }));
       tools.appendChild(item);
     }
 
@@ -118,8 +118,10 @@ var AutoSort = {
     return null;
   },
 
-  openFromWindow(win) {
+  /** wholeLibrary: ignore the selected collection and scan its whole library (Tools menu). */
+  openFromWindow(win, { wholeLibrary = false } = {}) {
     let target = this.getTarget(win);
+    if (target && wholeLibrary) target = { libraryID: target.libraryID, collection: null };
     if (!target) {
       // e.g. Tools menu while a saved search or the trash is selected: fall back to the whole library.
       const libraryID = win.ZoteroPane.getSelectedLibraryID();
