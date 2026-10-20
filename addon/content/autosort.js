@@ -274,7 +274,6 @@ var AutoSort = {
         const doc = dlg.document;
         while (!doc.getElementById("list").children.length) await Zotero.Promise.delay(200);
         this.log("SELFTEST dialog rows: " + doc.getElementById("list").children.length);
-        doc.getElementById("parent-name").value = "Auto-Sorted DialogTest";
         for (const cb of [...doc.querySelectorAll("#list input[type=checkbox]")].slice(0, 2)) cb.click();
         this.log("SELFTEST summary: " + doc.getElementById("summary").textContent);
         const shotPath = Services.env.get("AUTOSORT_SNAPSHOT");
@@ -299,6 +298,7 @@ var AutoSort = {
         this.log(`SELFTEST language pref=${this.getLanguagePref()} status="${doc.getElementById("status").textContent}" ` +
           `summary="${doc.getElementById("summary").textContent}" menu="${win.document.getElementById("autosort-tools-menuitem").getAttribute("label")}"`);
         if (shotPath) await snapshot(shotPath.replace(/\.png$/, "-en.png"));
+        doc.getElementById("parent-name").value = "Auto-Sorted DialogTest";
         await Zotero.Promise.delay(1500);
         doc.getElementById("apply").click();
         while (!/done|error/.test(doc.getElementById("status").className)) await Zotero.Promise.delay(200);

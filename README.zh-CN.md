@@ -6,6 +6,18 @@
 
 支持 Zotero 7 – 10（在 Zotero 10.0.6 上测试过）。界面提供中文和英文两种语言。
 
+## 截图
+
+工具栏按钮（三个叠放的文件夹）位于文献列表上方、“新建笔记”的右边：
+
+![Auto Sort 工具栏按钮](docs/images/toolbar.png)
+
+对话框列出候选分类及其关键词。你可以勾选想要的分类、修改名称、预览包含的文献，确认后再创建：
+
+![Auto Sort 中文界面](docs/images/dialog-zh.png)
+
+界面也提供英文版（[见英文 README](README.md#screenshots)）。
+
 ## 下载与安装
 
 **[⬇ 下载最新版本](https://github.com/Wegene38/zotero-auto-sort/releases/latest)**（当前版本：[v0.1.0](https://github.com/Wegene38/zotero-auto-sort/releases/tag/v0.1.0)）

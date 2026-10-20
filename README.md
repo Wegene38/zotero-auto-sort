@@ -6,6 +6,18 @@ Auto Sort scans your library (or one collection) and suggests topic categories, 
 
 Works with Zotero 7–10 (tested on Zotero 10.0.6). The interface is available in English and Chinese.
 
+## Screenshots
+
+The toolbar button (three stacked folders) sits right after "New Note" above the item list:
+
+![Auto Sort toolbar button](docs/images/toolbar.png)
+
+The dialog lists suggested categories with their keywords. Check the ones you want, rename them, and preview their items before creating collections:
+
+![Auto Sort dialog in English](docs/images/dialog-en.png)
+
+The interface is also available in Chinese ([see the Chinese README](README.zh-CN.md#截图)).
+
 ## Download and install
 
 **[⬇ Download the latest release](https://github.com/Wegene38/zotero-auto-sort/releases/latest)** (current version: [v0.1.0](https://github.com/Wegene38/zotero-auto-sort/releases/tag/v0.1.0))
