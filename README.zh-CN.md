@@ -6,6 +6,17 @@
 
 支持 Zotero 7 – 10（在 Zotero 10.0.6 上测试过）。界面提供中文和英文两种语言。
 
+## 下载与安装
+
+**[⬇ 下载最新版本](https://github.com/Wegene38/zotero-auto-sort/releases/latest)**（当前版本：[v0.1.0](https://github.com/Wegene38/zotero-auto-sort/releases/tag/v0.1.0)）
+
+1. 在 Release 页面的 **Assets** 中下载 `auto-sort-<版本号>.xpi`。如果用 Firefox，请右键选择 **链接另存为…**，因为直接点击会被 Firefox 当成它自己的扩展来安装。
+2. 在 Zotero 中打开 **工具 → 插件**。
+3. 点击右上角的齿轮图标，选择 **Install Add-on From File…**，然后选中下载的 `.xpi` 文件。
+4. 文献列表上方会出现工具栏按钮（三个叠放的文件夹），无需重启。
+
+需要 Zotero 7 或更高版本（已在 Zotero 10.0.6 上测试）。安装后，有新版本发布时 Zotero 会自动更新插件。
+
 ## 使用
 
 - **工具栏按钮**（文献列表上方、“新建笔记”右边的三个叠放文件夹图标）：选中分类时扫描该分类，选中文库时扫描整个文库
@@ -55,7 +66,7 @@ scripts/
 ./scripts/build.sh
 ```
 
-安装：Zotero → 工具 → 插件 → 齿轮图标 → Install Add-on From File… → 选择 `build/auto-sort-*.xpi`。
+安装本地构建：按照 [下载与安装](#下载与安装) 中的步骤操作，选择 `build/auto-sort-*.xpi` 即可。
 
 **添加新语言：** 在 `addon/content/i18n.js` 的 `STRINGS` 中加一组同样 key 的文字，在 `LANGUAGE_NAMES` 中加上语言名，在 `dialog.xhtml` 的语言菜单中加一个 `<option>`，并修改 `resolve()` 让“跟随 Zotero”能识别它。
 

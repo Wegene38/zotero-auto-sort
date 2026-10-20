@@ -6,6 +6,17 @@ Auto Sort scans your library (or one collection) and suggests topic categories, 
 
 Works with Zotero 7–10 (tested on Zotero 10.0.6). The interface is available in English and Chinese.
 
+## Download and install
+
+**[⬇ Download the latest release](https://github.com/Wegene38/zotero-auto-sort/releases/latest)** (current version: [v0.1.0](https://github.com/Wegene38/zotero-auto-sort/releases/tag/v0.1.0))
+
+1. On the release page, download `auto-sort-<version>.xpi` from **Assets**. In Firefox, right-click the file and choose **Save Link As…**, because clicking it makes Firefox try to install it as a Firefox add-on.
+2. In Zotero, open **Tools → Plugins**.
+3. Click the gear icon in the top-right corner, choose **Install Add-on From File…**, and select the downloaded `.xpi` file.
+4. The toolbar button (three stacked folders) appears above the item list. No restart is needed.
+
+Requires Zotero 7 or later (tested on Zotero 10.0.6). Once installed, Zotero updates the plugin automatically when a new version is released.
+
 ## Usage
 
 - **Toolbar button** (three stacked folders, right after "New Note" above the item list) scans the selected collection, or the whole library if a library is selected.
@@ -55,7 +66,7 @@ Build:
 ./scripts/build.sh
 ```
 
-Install: Zotero → Tools → Plugins → gear icon → Install Add-on From File… → choose `build/auto-sort-*.xpi`.
+To install a local build, follow the steps in [Download and install](#download-and-install) and choose `build/auto-sort-*.xpi`.
 
 **Adding a language:** add a block with the same keys to `STRINGS` in `addon/content/i18n.js`, add its name to `LANGUAGE_NAMES`, add an `<option>` to the language menu in `dialog.xhtml`, and extend `resolve()` so "Follow Zotero" can pick it.
 
